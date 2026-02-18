@@ -28,7 +28,7 @@ struct GameView: View {
 
                     Spacer()
 
-                    Text(gameState.format.rawValue)
+                    Text("Commander")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.gray)
                         .padding(.horizontal, 10)
