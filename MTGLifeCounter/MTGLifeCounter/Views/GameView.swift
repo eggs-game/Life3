@@ -2,8 +2,7 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject var gameState: GameState
-    @State private var showResetAlert = false
-    @State private var showHistorySheet = false
+    @State private var showGameMenu = false
 
     var layout: GameLayout {
         switch gameState.players.count {
@@ -17,58 +16,41 @@ struct GameView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Slim single toolbar
-                HStack(spacing: 20) {
-                    Button(action: { showHistorySheet = true }) {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 16))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-
-                    Spacer()
-
-                    Text("Commander")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(.gray)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(Capsule())
-
-                    Spacer()
-
-                    Button(action: { showResetAlert = true }) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 16))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
+            // Player grid
+            Group {
+                switch layout {
+                case .twoPlayer:
+                    TwoPlayerLayout(gameState: gameState)
+                case .threePlayer:
+                    ThreePlayerLayout(gameState: gameState)
+                case .fourPlayer:
+                    FourPlayerLayout(gameState: gameState)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 6)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                // Player grid — fills all remaining height
-                Group {
-                    switch layout {
-                    case .twoPlayer:
-                        TwoPlayerLayout(gameState: gameState)
-                    case .threePlayer:
-                        ThreePlayerLayout(gameState: gameState)
-                    case .fourPlayer:
-                        FourPlayerLayout(gameState: gameState)
-                    }
+            // Center turn / home button
+            Button(action: { showGameMenu = true }) {
+                VStack(spacing: 1) {
+                    Text("TURN")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.white.opacity(0.5))
+                        .tracking(1)
+                    Text("\(gameState.turnNumber)")
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(width: 64, height: 64)
+                .background(
+                    Circle()
+                        .fill(Color(white: 0.1))
+                        .overlay(Circle().stroke(Color.white.opacity(0.25), lineWidth: 1.5))
+                        .shadow(color: .black.opacity(0.8), radius: 12)
+                )
             }
         }
-        .alert("Reset Game?", isPresented: $showResetAlert) {
-            Button("Reset", role: .destructive) { gameState.resetGame() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("All life totals will be reset to \(gameState.format.startingLife).")
-        }
-        .sheet(isPresented: $showHistorySheet) {
-            HistoryView(history: gameState.lifeHistory)
+        .sheet(isPresented: $showGameMenu) {
+            GameMenuView(gameState: gameState)
         }
     }
 }

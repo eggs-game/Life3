@@ -32,6 +32,11 @@ class Player: ObservableObject, Identifiable {
 class GameState: ObservableObject {
     @Published var players: [Player] = []
     @Published var lifeHistory: [String] = []
+    @Published var turnNumber: Int = 1
+
+    /// Tracks which players have changed life this turn.
+    /// When all players have changed life at least once, the turn advances.
+    private var playersChangedThisTurn: Set<UUID> = []
 
     let format: GameFormat = .commander
 
@@ -64,13 +69,25 @@ class GameState: ObservableObject {
             player.resetLife(to: format.startingLife, opponents: opponents)
         }
         lifeHistory = []
+        turnNumber = 1
+        playersChangedThisTurn = []
+    }
+
+    func nextTurn() {
+        turnNumber += 1
+        playersChangedThisTurn = []
     }
 
     func changeLife(for player: Player, by amount: Int) {
         let old = player.life
         player.life += amount
         let change = amount > 0 ? "+\(amount)" : "\(amount)"
-        lifeHistory.append("\(player.name): \(old) \(change) = \(player.life)")
+        lifeHistory.append("Turn \(turnNumber) — \(player.name): \(old) \(change) = \(player.life)")
+
+        playersChangedThisTurn.insert(player.id)
+        if playersChangedThisTurn.count == players.count {
+            nextTurn()
+        }
     }
 
     func addCommanderDamage(to player: Player, from attackerId: UUID, amount: Int) {
