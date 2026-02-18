@@ -91,11 +91,11 @@ struct TwoPlayerLayout: View {
     var body: some View {
         HStack(spacing: 2) {
             // Left player reads upward (rotated 90° CCW)
-            PlayerCardView(player: gameState.players[0], gameState: gameState)
+            PlayerCardView(player: gameState.players[0], gameState: gameState, cardRotation: -90)
                 .rotationEffect(.degrees(-90))
 
             // Right player reads downward (rotated 90° CW)
-            PlayerCardView(player: gameState.players[1], gameState: gameState)
+            PlayerCardView(player: gameState.players[1], gameState: gameState, cardRotation: 90)
                 .rotationEffect(.degrees(90))
         }
     }
@@ -107,9 +107,9 @@ struct ThreePlayerLayout: View {
     var body: some View {
         VStack(spacing: 2) {
             HStack(spacing: 2) {
-                PlayerCardView(player: gameState.players[0], gameState: gameState)
+                PlayerCardView(player: gameState.players[0], gameState: gameState, cardRotation: 180)
                     .rotationEffect(.degrees(180))
-                PlayerCardView(player: gameState.players[1], gameState: gameState)
+                PlayerCardView(player: gameState.players[1], gameState: gameState, cardRotation: 180)
                     .rotationEffect(.degrees(180))
             }
             PlayerCardView(player: gameState.players[2], gameState: gameState)
@@ -123,9 +123,9 @@ struct FourPlayerLayout: View {
     var body: some View {
         VStack(spacing: 2) {
             HStack(spacing: 2) {
-                PlayerCardView(player: gameState.players[0], gameState: gameState)
+                PlayerCardView(player: gameState.players[0], gameState: gameState, cardRotation: 180)
                     .rotationEffect(.degrees(180))
-                PlayerCardView(player: gameState.players[1], gameState: gameState)
+                PlayerCardView(player: gameState.players[1], gameState: gameState, cardRotation: 180)
                     .rotationEffect(.degrees(180))
             }
             HStack(spacing: 2) {

@@ -3,10 +3,14 @@ import SwiftUI
 struct PlayerCardView: View {
     @ObservedObject var player: Player
     @ObservedObject var gameState: GameState
+    /// The rotation (degrees) applied to this card in its parent layout.
+    /// Used to interpret the swipe-up direction in screen-space coordinates.
+    var cardRotation: Double = 0
+
     @State private var showCommanderDamage = false
+    @State private var showEditPlayer = false
     @State private var lifeChangeDisplay: Int? = nil
     @State private var displayTimer: Timer? = nil
-    @GestureState private var isDragging = false
 
     var isEliminated: Bool { gameState.isEliminated(player) }
 
@@ -21,7 +25,6 @@ struct PlayerCardView: View {
                 )
 
             if isEliminated {
-                // Eliminated overlay
                 VStack(spacing: 8) {
                     Image(systemName: "skull.fill")
                         .font(.system(size: 40))
@@ -36,11 +39,18 @@ struct PlayerCardView: View {
                 }
             } else {
                 VStack(spacing: 0) {
-                    // Player name
-                    Text(player.name)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.8))
-                        .padding(.top, 10)
+                    // Player name — tap to edit
+                    Button(action: { showEditPlayer = true }) {
+                        HStack(spacing: 4) {
+                            Text(player.name)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(.white.opacity(0.85))
+                            Image(systemName: "pencil")
+                                .font(.system(size: 9))
+                                .foregroundColor(.white.opacity(0.4))
+                        }
+                    }
+                    .padding(.top, 10)
 
                     Spacer()
 
@@ -51,7 +61,6 @@ struct PlayerCardView: View {
                             .foregroundColor(.white)
                             .shadow(color: .black.opacity(0.3), radius: 4)
 
-                        // Delta indicator
                         if let delta = lifeChangeDisplay {
                             Text(delta > 0 ? "+\(delta)" : "\(delta)")
                                 .font(.system(size: 22, weight: .bold))
@@ -65,26 +74,22 @@ struct PlayerCardView: View {
 
                     // Bottom controls
                     HStack {
-                        // Commander damage badge
-                        if gameState.format == .commander {
-                            Button(action: { showCommanderDamage.toggle() }) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "shield.lefthalf.filled")
-                                        .font(.system(size: 11))
-                                    Text("\(player.totalCommanderDamageReceived())")
-                                        .font(.system(size: 12, weight: .bold))
-                                }
-                                .foregroundColor(.white.opacity(0.85))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.black.opacity(0.3))
-                                .clipShape(Capsule())
+                        Button(action: { showCommanderDamage.toggle() }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "shield.lefthalf.filled")
+                                    .font(.system(size: 11))
+                                Text("\(player.totalCommanderDamageReceived())")
+                                    .font(.system(size: 12, weight: .bold))
                             }
+                            .foregroundColor(.white.opacity(0.85))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Capsule())
                         }
 
                         Spacer()
 
-                        // +/- quick buttons
                         HStack(spacing: 12) {
                             Button(action: { adjustLife(by: -1) }) {
                                 Image(systemName: "minus")
@@ -94,7 +99,6 @@ struct PlayerCardView: View {
                                     .background(Color.black.opacity(0.3))
                                     .clipShape(Circle())
                             }
-
                             Button(action: { adjustLife(by: +1) }) {
                                 Image(systemName: "plus")
                                     .font(.system(size: 16, weight: .bold))
@@ -110,7 +114,7 @@ struct PlayerCardView: View {
                 }
             }
 
-            // Large tap zones (left = -1, right = +1)
+            // Large tap zones (left = -1, right = +1) + swipe-up to edit
             if !isEliminated && !showCommanderDamage {
                 HStack(spacing: 0) {
                     Color.clear
@@ -127,23 +131,44 @@ struct PlayerCardView: View {
                             adjustLife(by: +5)
                         }
                 }
+                .gesture(
+                    DragGesture(minimumDistance: 30)
+                        .onEnded { value in
+                            if isUpwardSwipe(value.translation) {
+                                showEditPlayer = true
+                            }
+                        }
+                )
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .sheet(isPresented: $showCommanderDamage) {
             CommanderDamageView(player: player, gameState: gameState)
         }
+        .sheet(isPresented: $showEditPlayer) {
+            PlayerEditView(player: player)
+        }
+    }
+
+    // MARK: - Helpers
+
+    /// Detects a swipe "upward" from the player's visual perspective.
+    /// rotationEffect() is visual-only; gesture coords stay in screen space.
+    /// So we invert the expected axis/direction based on the card's rotation.
+    private func isUpwardSwipe(_ t: CGSize) -> Bool {
+        let threshold: Double = 40
+        switch cardRotation {
+        case 180:   return t.height > threshold    // player's up = screen down
+        case 90:    return t.width  < -threshold   // player's up = screen left
+        case -90:   return t.width  > threshold    // player's up = screen right
+        default:    return t.height < -threshold   // player's up = screen up
+        }
     }
 
     private func adjustLife(by amount: Int) {
         gameState.changeLife(for: player, by: amount)
-
         displayTimer?.invalidate()
-        if let current = lifeChangeDisplay {
-            lifeChangeDisplay = current + amount
-        } else {
-            lifeChangeDisplay = amount
-        }
+        lifeChangeDisplay = (lifeChangeDisplay ?? 0) + amount
         displayTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
             withAnimation { lifeChangeDisplay = nil }
         }
