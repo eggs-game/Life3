@@ -43,14 +43,6 @@ struct GameView: View {
                             .font(.system(size: 16))
                             .foregroundColor(.white.opacity(0.7))
                     }
-
-                    Button(action: {
-                        withAnimation { gameState.isGameActive = false }
-                    }) {
-                        Image(systemName: "house.fill")
-                            .font(.system(size: 16))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 6)

@@ -1,18 +1,8 @@
 import SwiftUI
-import Combine
 
-enum GameFormat: String, CaseIterable, Identifiable {
-    case commander = "Commander"
-    case standard = "Standard"
-    case modern = "Modern"
-
-    var id: String { rawValue }
-    var startingLife: Int {
-        switch self {
-        case .commander: return 40
-        case .standard, .modern: return 20
-        }
-    }
+enum GameFormat {
+    case commander
+    var startingLife: Int { 40 }
 }
 
 class Player: ObservableObject, Identifiable {
@@ -41,11 +31,9 @@ class Player: ObservableObject, Identifiable {
 
 class GameState: ObservableObject {
     @Published var players: [Player] = []
-    @Published var format: GameFormat = .commander
-    @Published var playerCount: Int = 4
-    @Published var isGameActive: Bool = false
-    @Published var showHistory: Bool = false
     @Published var lifeHistory: [String] = []
+
+    let format: GameFormat = .commander
 
     static let playerColors: [Color] = [
         Color(red: 0.8, green: 0.2, blue: 0.2),   // Red
@@ -56,21 +44,18 @@ class GameState: ObservableObject {
 
     static let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"]
 
-    func startGame() {
-        players = (0..<playerCount).map { index in
+    init() {
+        players = (0..<4).map { index in
             Player(
                 name: GameState.playerNames[index],
-                startingLife: format.startingLife,
+                startingLife: GameFormat.commander.startingLife,
                 color: GameState.playerColors[index]
             )
         }
-        // Init commander damage tracking
         for player in players {
             let opponents = players.filter { $0.id != player.id }
             player.commanderDamage = Dictionary(uniqueKeysWithValues: opponents.map { ($0.id, 0) })
         }
-        isGameActive = true
-        lifeHistory = []
     }
 
     func resetGame() {

@@ -10,7 +10,6 @@
 		AA000001 /* MTGLifeCounterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100001 /* MTGLifeCounterApp.swift */; };
 		AA000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100002 /* ContentView.swift */; };
 		AA000003 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100003 /* GameState.swift */; };
-		AA000004 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100004 /* SetupView.swift */; };
 		AA000005 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100005 /* GameView.swift */; };
 		AA000006 /* PlayerCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100006 /* PlayerCardView.swift */; };
 		AA000007 /* CommanderDamageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100007 /* CommanderDamageView.swift */; };
@@ -22,7 +21,6 @@
 		AA100001 /* MTGLifeCounterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTGLifeCounterApp.swift; sourceTree = "<group>"; };
 		AA100002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA100003 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
-		AA100004 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		AA100005 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		AA100006 /* PlayerCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerCardView.swift; sourceTree = "<group>"; };
 		AA100007 /* CommanderDamageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommanderDamageView.swift; sourceTree = "<group>"; };
@@ -73,7 +71,6 @@
 			isa = PBXGroup;
 			children = (
 				AA100002 /* ContentView.swift */,
-				AA100004 /* SetupView.swift */,
 				AA100005 /* GameView.swift */,
 				AA100006 /* PlayerCardView.swift */,
 				AA100007 /* CommanderDamageView.swift */,
@@ -162,7 +159,6 @@
 				AA000001 /* MTGLifeCounterApp.swift in Sources */,
 				AA000002 /* ContentView.swift in Sources */,
 				AA000003 /* GameState.swift in Sources */,
-				AA000004 /* SetupView.swift in Sources */,
 				AA000005 /* GameView.swift in Sources */,
 				AA000006 /* PlayerCardView.swift in Sources */,
 				AA000007 /* CommanderDamageView.swift in Sources */,
