@@ -5,6 +5,8 @@ struct GameMenuView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showHistory = false
     @State private var confirmReset = false
+    @State private var showCommanderPicker = false
+    @State private var showCommanderSettings = false
 
     var body: some View {
         ZStack {
@@ -50,6 +52,26 @@ struct GameMenuView: View {
                 Divider().background(Color.white.opacity(0.08)).padding(.leading, 52)
 
                 menuRow(
+                    icon: "shield.lefthalf.filled",
+                    label: "Change Commander",
+                    color: .yellow
+                ) {
+                    showCommanderPicker = true
+                }
+
+                Divider().background(Color.white.opacity(0.08)).padding(.leading, 52)
+
+                menuRow(
+                    icon: "gear",
+                    label: "Commander Settings",
+                    color: .gray
+                ) {
+                    showCommanderSettings = true
+                }
+
+                Divider().background(Color.white.opacity(0.08)).padding(.leading, 52)
+
+                menuRow(
                     icon: "arrow.counterclockwise",
                     label: "Restart Game",
                     color: .red
@@ -61,9 +83,15 @@ struct GameMenuView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .presentationDetents([.fraction(0.5)])
+        .presentationDetents([.fraction(0.65)])
         .sheet(isPresented: $showHistory) {
             HistoryView(history: gameState.lifeHistory)
+        }
+        .sheet(isPresented: $showCommanderPicker) {
+            CommanderPickerView(gameState: gameState)
+        }
+        .sheet(isPresented: $showCommanderSettings) {
+            CommanderSettingsView()
         }
         .alert("Restart Game?", isPresented: $confirmReset) {
             Button("Restart", role: .destructive) {

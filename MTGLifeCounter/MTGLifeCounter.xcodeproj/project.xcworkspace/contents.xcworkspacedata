@@ -4,4 +4,47 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:CommanderStore.swift">
+   </FileRef>
+   <FileRef
+      location = "group:CommanderSettingsView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:CommanderPickerView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ContentView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:QRCodeView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:QRJoinPanel.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ContentView 2.swift">
+   </FileRef>
+   <FileRef
+      location = "group:GameView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:GameView 2.swift">
+   </FileRef>
+   <FileRef
+      location = "group:ContentView 3.swift">
+   </FileRef>
+   <FileRef
+      location = "group:DiceRollerView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:WinnerPickerView.swift">
+   </FileRef>
+   <FileRef
+      location = "group:WinnerAnnouncementView.swift">
+   </FileRef>
+   <Group
+      location = "group:New Group"
+      name = "New Group">
+   </Group>
 </Workspace>

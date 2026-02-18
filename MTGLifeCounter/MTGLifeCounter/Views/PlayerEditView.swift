@@ -8,14 +8,14 @@ struct PlayerEditView: View {
 
     // Preset palette — same initial 4 as GameState plus extras
     static let colorOptions: [Color] = [
-        Color(red: 0.8, green: 0.2, blue: 0.2),  // Red
-        Color(red: 0.1, green: 0.4, blue: 0.8),  // Blue
-        Color(red: 0.1, green: 0.6, blue: 0.2),  // Green
-        Color(red: 0.6, green: 0.4, blue: 0.8),  // Purple
-        Color(red: 0.9, green: 0.5, blue: 0.1),  // Orange
-        Color(red: 0.1, green: 0.6, blue: 0.6),  // Teal
-        Color(red: 0.85, green: 0.2, blue: 0.5), // Pink
-        Color(red: 0.4, green: 0.3, blue: 0.2),  // Brown
+        Color(red: 1.0,  green: 0.25, blue: 0.35), // Coral Red
+        Color(red: 0.18, green: 0.55, blue: 1.0),  // Electric Blue
+        Color(red: 0.18, green: 0.85, blue: 0.45), // Neon Mint
+        Color(red: 0.85, green: 0.25, blue: 1.0),  // Vivid Purple
+        Color(red: 1.0,  green: 0.55, blue: 0.0),  // Blazing Orange
+        Color(red: 0.0,  green: 0.85, blue: 0.85), // Cyan
+        Color(red: 1.0,  green: 0.2,  blue: 0.75), // Hot Pink
+        Color(red: 0.65, green: 1.0,  blue: 0.0),  // Lime Green
     ]
 
     init(player: Player) {
@@ -105,7 +105,10 @@ struct PlayerEditView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         let trimmed = draftName.trimmingCharacters(in: .whitespaces)
-                        if !trimmed.isEmpty { player.name = trimmed }
+                        if !trimmed.isEmpty {
+                            player.name = trimmed
+                            player.hasBeenNamed = true
+                        }
                         player.color = draftColor
                         dismiss()
                     }

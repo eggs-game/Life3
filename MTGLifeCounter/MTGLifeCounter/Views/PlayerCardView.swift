@@ -37,6 +37,9 @@ struct PlayerCardView: View {
                         .font(.system(size: 12))
                         .foregroundColor(.white.opacity(0.4))
                 }
+            } else if !player.isOwner && !player.hasBeenNamed {
+                // ── QR panel ── other player hasn't joined yet
+                QRJoinPanel(player: player)
             } else {
                 VStack(spacing: 0) {
                     // Player name — tap to edit
@@ -89,25 +92,6 @@ struct PlayerCardView: View {
                         }
 
                         Spacer()
-
-                        HStack(spacing: 12) {
-                            Button(action: { adjustLife(by: -1) }) {
-                                Image(systemName: "minus")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 36, height: 36)
-                                    .background(Color.black.opacity(0.3))
-                                    .clipShape(Circle())
-                            }
-                            Button(action: { adjustLife(by: +1) }) {
-                                Image(systemName: "plus")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 36, height: 36)
-                                    .background(Color.black.opacity(0.3))
-                                    .clipShape(Circle())
-                            }
-                        }
                     }
                     .padding(.horizontal, 12)
                     .padding(.bottom, 10)
@@ -115,7 +99,7 @@ struct PlayerCardView: View {
             }
 
             // Large tap zones (left = -1, right = +1) + swipe-up to edit
-            if !isEliminated && !showCommanderDamage {
+            if !isEliminated && !showCommanderDamage && (player.isOwner || player.hasBeenNamed) {
                 HStack(spacing: 0) {
                     Color.clear
                         .contentShape(Rectangle())
@@ -140,8 +124,13 @@ struct PlayerCardView: View {
                         }
                 )
             }
+
+            // Drag handle — only shown on the owner's panel
+            if player.isOwner && !isEliminated {
+                OwnerDragHandle(cardRotation: cardRotation)
+            }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(Rectangle())
         .sheet(isPresented: $showCommanderDamage) {
             CommanderDamageView(player: player, gameState: gameState)
         }
@@ -174,3 +163,47 @@ struct PlayerCardView: View {
         }
     }
 }
+
+// MARK: - Owner drag handle
+
+/// A grip icon pinned to the corner of the owner's panel.
+/// Reports its drag location in global coordinates via OwnerDragPreferenceKey
+/// so GameView can determine which slot to swap into.
+private struct OwnerDragHandle: View {
+    let cardRotation: Double
+    @State private var dragPoint: CGPoint? = nil
+
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.white.opacity(dragPoint != nil ? 1.0 : 0.7))
+                    .frame(width: 38, height: 38)
+                    .background(
+                        Circle()
+                            .fill(Color.black.opacity(dragPoint != nil ? 0.7 : 0.4))
+                            .overlay(
+                                Circle().stroke(
+                                    Color.white.opacity(dragPoint != nil ? 0.6 : 0.2),
+                                    lineWidth: 1.5
+                                )
+                            )
+                    )
+                    .scaleEffect(dragPoint != nil ? 1.15 : 1.0)
+                    .animation(.spring(response: 0.2), value: dragPoint != nil)
+                    .rotationEffect(.degrees(cardRotation))
+                    .padding(10)
+                    .gesture(
+                        DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                            .onChanged { value in dragPoint = value.location }
+                            .onEnded   { _     in dragPoint = nil }
+                    )
+            }
+            Spacer()
+        }
+        .preference(key: OwnerDragPreferenceKey.self, value: dragPoint)
+    }
+}
+
