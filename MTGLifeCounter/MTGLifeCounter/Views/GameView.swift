@@ -18,21 +18,21 @@ struct GameView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Top bar
-                HStack {
+                // Slim single toolbar
+                HStack(spacing: 20) {
                     Button(action: { showHistorySheet = true }) {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.title2)
+                            .font(.system(size: 16))
                             .foregroundColor(.white.opacity(0.7))
                     }
 
                     Spacer()
 
                     Text(gameState.format.rawValue)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.gray)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
                         .background(Color.white.opacity(0.1))
                         .clipShape(Capsule())
 
@@ -40,15 +40,22 @@ struct GameView: View {
 
                     Button(action: { showResetAlert = true }) {
                         Image(systemName: "arrow.counterclockwise")
-                            .font(.title2)
+                            .font(.system(size: 16))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+
+                    Button(action: {
+                        withAnimation { gameState.isGameActive = false }
+                    }) {
+                        Image(systemName: "house.fill")
+                            .font(.system(size: 16))
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
+                .padding(.vertical, 6)
 
-                // Player grid
+                // Player grid — fills all remaining height
                 Group {
                     switch layout {
                     case .twoPlayer:
@@ -60,27 +67,6 @@ struct GameView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                // Bottom bar
-                HStack {
-                    Button(action: {
-                        withAnimation {
-                            gameState.isGameActive = false
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "house.fill")
-                            Text("Menu")
-                        }
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.7))
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(Capsule())
-                    }
-                }
-                .padding(.bottom, 12)
             }
         }
         .alert("Reset Game?", isPresented: $showResetAlert) {
@@ -100,15 +86,25 @@ enum GameLayout {
 }
 
 // MARK: - Layouts
+//
+// Landscape orientation: screen is wider than tall.
+// For 2 players: side-by-side, each panel rotated 90° so players face inward from
+// opposite long edges of the table.
+// For 3 players: two on top (rotated 180°) + one full-width on bottom.
+// For 4 players: 2 × 2 grid — top row rotated 180°, bottom row normal.
 
 struct TwoPlayerLayout: View {
     @ObservedObject var gameState: GameState
 
     var body: some View {
-        VStack(spacing: 2) {
+        HStack(spacing: 2) {
+            // Left player reads upward (rotated 90° CCW)
             PlayerCardView(player: gameState.players[0], gameState: gameState)
-                .rotationEffect(.degrees(180))
+                .rotationEffect(.degrees(-90))
+
+            // Right player reads downward (rotated 90° CW)
             PlayerCardView(player: gameState.players[1], gameState: gameState)
+                .rotationEffect(.degrees(90))
         }
     }
 }
